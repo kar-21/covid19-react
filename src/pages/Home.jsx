@@ -2,13 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./Home.css";
 import Axios from "axios";
 import Paper from "@material-ui/core/Paper";
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import { makeStyles } from "@material-ui/core/styles";
 import Graph from "./Graph";
-
-// import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-// import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-// import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-// import Typography from "@material-ui/core/Typography";
 
 import {
   Table,
@@ -37,7 +33,7 @@ const useStyles = makeStyles({
   },
   cellBoarderDistrict: {
     border: "0px",
-    height: "25px",
+    height: "38px",
   },
   row: {
     cursor: "pointer",
@@ -68,6 +64,7 @@ function Home() {
   const [clickedState, setClickedState] = useState();
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("confirmed");
+  const [orderDistrict, setOrderDistrict] = useState("asc");
   let overallConfirmed = 0;
   const rowHeader = [
     { id: "state", numeric: false, label: "State" },
@@ -118,6 +115,9 @@ function Home() {
   }
 
   const changeSortingOrder = (key) => {
+    if (isClicked) {
+      setIsClicked(false);
+    }
     if (key === orderBy) {
       setOrder(order === "asc" ? "desc" : "asc");
     } else {
@@ -173,8 +173,9 @@ function Home() {
 
   function TableContent() {
     sortDataIn(orderBy, order);
+    console.log(rows);
     return rows.map((row) => (
-      <>
+      <React.Fragment key={row.state}>
         <TableRow
           key={row.state + "row"}
           className={classes.row}
@@ -199,97 +200,160 @@ function Home() {
             align="right"
             className={classes.cellBoarder}
           >
-            <span className="small confirmed">[+{row.deltaConfirmed}] </span>
-            <span className="medium confirmed">{row.confirmed}</span>
+            {row.deltaConfirmed !== "0" ? (
+              <span className="small confirmed">
+                <ArrowUpwardIcon fontSize="inherit" />
+                {row.deltaConfirmed}{" "}
+              </span>
+            ) : null}
+            <span className="medium">{row.confirmed}</span>
           </TableCell>
           <TableCell
             key={row.state + "active"}
             align="right"
             className={classes.cellBoarder}
           >
-            <span className="medium active">{row.active}</span>
+            <span className="medium">{row.active}</span>
           </TableCell>
           <TableCell
             key={row.state + "recoverd"}
             align="right"
             className={classes.cellBoarder}
           >
-            <span className="small recovered">[+{row.deltaRecovered}] </span>
-            <span className="medium recovered">{row.recovered}</span>
+            {row.deltaRecovered !== "0" ? (
+              <span className="small recovered">
+                <ArrowUpwardIcon fontSize="inherit" />
+                {row.deltaRecovered}{" "}
+              </span>
+            ) : null}
+            <span className="medium">{row.recovered}</span>
           </TableCell>
           <TableCell
             key={row.state + "deaths"}
             align="right"
             className={classes.cellBoarder}
           >
-            <span className="small deaths">[+{row.deltaDeaths}] </span>
-            <span className="medium deaths">{row.deaths}</span>
+            {row.deltaDeaths !== "0" ? (
+              <span className="small deaths">
+                <ArrowUpwardIcon fontSize="inherit" />
+                {row.deltaDeaths}{" "}
+              </span>
+            ) : null}
+            <span className="medium">{row.deaths}</span>
           </TableCell>
         </TableRow>
         {isClicked && clickedState === row.state ? (
           <StateData stateKey={row.state} />
         ) : null}
-      </>
+      </React.Fragment>
     ));
   }
 
+  function changeDistrictSortingOrder() {
+    if (orderDistrict === "asc") {
+      setOrderDistrict("desc");
+    } else {
+      setOrderDistrict("asc");
+    }
+  }
+
   function StateData(state) {
+    let districtRows = [];
+    Object.keys(disctrictResponse[state.stateKey].districtData).map(
+      (district) => {
+        districtRows = [
+          ...districtRows,
+          {
+            district: district,
+            confirmed:
+              disctrictResponse[state.stateKey].districtData[district]
+                .confirmed,
+            deltaConfirmed:
+              disctrictResponse[state.stateKey].districtData[district].delta
+                .confirmed,
+          },
+        ];
+      }
+    );
+    console.log(districtRows);
+    districtRows.sort(compareKeys("confirmed", orderDistrict));
     return (
       <TableRow rowSpan={2}>
-        <TableCell className={classes.noPaddingRight}>
+        <TableCell key="distric-name" className={classes.noPaddingRight}>
           <Table size="small">
-            <TableHead className={classes.header}>
-              <TableCell
-                className={classes.cellBoarderDistrict}
-                key={rowDistrictHeader[0].label}
-              >
-                {rowDistrictHeader[0].label}
-              </TableCell>
+            <TableHead
+              key={rowDistrictHeader[0].label}
+              className={classes.header}
+            >
+              <TableRow>
+                <TableCell
+                  className={classes.cellBoarderDistrict}
+                  key={rowDistrictHeader[0].label}
+                >
+                  <span className="district-medium">
+                    {rowDistrictHeader[0].label}
+                  </span>
+                </TableCell>
+              </TableRow>
             </TableHead>
             <TableBody>
-              {Object.keys(disctrictResponse[state.stateKey].districtData).map(
-                (district) => (
-                  <TableRow key={district}>
-                    <TableCell
-                      className={classes.cellBoarderDistrict}
-                      key={district + "name"}
-                    >
-                      {district}
-                    </TableCell>
-                  </TableRow>
-                )
-              )}
+              {districtRows.map((district) => (
+                <TableRow key={district.district}>
+                  <TableCell
+                    className={classes.cellBoarderDistrict}
+                    key={district + "name"}
+                  >
+                    <span className="district-medium">{district.district}</span>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableCell>
-        <TableCell className={classes.noPaddingLeft}>
+        <TableCell key="distric-confirmed" className={classes.noPaddingLeft}>
           <Table size="small">
-            <TableHead className={classes.header}>
-              <TableCell
-                align="right"
-                className={classes.cellBoarderDistrict}
-                key={rowDistrictHeader[1].label}
-              >
-                {rowDistrictHeader[1].label}
-              </TableCell>
+            <TableHead
+              key={rowDistrictHeader[1].label}
+              className={classes.header}
+            >
+              <TableRow>
+                <TableCell
+                  align="right"
+                  className={classes.cellBoarderDistrict}
+                  key={rowDistrictHeader[1].label}
+                >
+                  <TableSortLabel
+                    active
+                    order={orderDistrict}
+                    onClick={() => changeDistrictSortingOrder()}
+                  >
+                    <span className="district-medium">
+                      {rowDistrictHeader[1].label}
+                    </span>
+                  </TableSortLabel>
+                </TableCell>
+              </TableRow>
             </TableHead>
             <TableBody>
-              {Object.keys(disctrictResponse[state.stateKey].districtData).map(
-                (district) => (
-                  <TableRow key={district}>
-                    <TableCell
-                      align="right"
-                      className={classes.cellBoarderDistrict}
-                      key={district + "confirmed"}
-                    >
-                      {
-                        disctrictResponse[state.stateKey].districtData[district]
-                          .confirmed
-                      }
-                    </TableCell>
-                  </TableRow>
-                )
-              )}
+              {districtRows.map((district) => (
+                <TableRow key={district}>
+                  <TableCell
+                    align="right"
+                    className={classes.cellBoarderDistrict}
+                    key={district + "confirmed"}
+                  >
+                    {district.deltaConfirmed !== 0 ? (
+                      <span className="small confirmed">
+                        <ArrowUpwardIcon fontSize="inherit" />
+                        {district.deltaConfirmed}
+                      </span>
+                    ) : null}
+                    <span className="district-medium">
+                      {district.confirmed}
+                    </span>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </TableCell>

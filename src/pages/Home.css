@@ -5,19 +5,23 @@
   font-size: medium;
   font-weight: 700;
 }
+.district-medium {
+  font-size: 14px;
+  font-weight: 500;
+}
 .confirmed {
-    color: red !important;
+  color: red !important;
 }
 .active {
-    color: maroon !important;
+  color: maroon !important;
 }
 .recovered {
-    color: green !important;
+  color: green !important;
 }
 .deaths {
-    color: darkslategray !important;
+  color: darkslategray !important;
 }
 h3 {
-    margin: 0px;
-    font-size: 20px;
+  margin: 0px;
+  font-size: 20px;
 }
