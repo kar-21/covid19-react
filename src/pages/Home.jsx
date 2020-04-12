@@ -336,11 +336,11 @@ function Home() {
             </TableHead>
             <TableBody>
               {districtRows.map((district) => (
-                <TableRow key={district}>
+                <TableRow key={district.district}>
                   <TableCell
                     align="right"
                     className={classes.cellBoarderDistrict}
-                    key={district + "confirmed"}
+                    key={district.district + "confirmed"}
                   >
                     {district.deltaConfirmed !== 0 ? (
                       <span className="small confirmed">
