@@ -12,7 +12,7 @@ Website made-up of reactJS which displays covid19 count over India and state wis
 
 # Deployed site
 [covid19-react](https://covid19-react-kk.netlify.app/)
-[![covid19-react](websitte-preview.gif)]
+![](website-preview.gif)
 ## API's Used
 * [State Data](https://api.covid19india.org/data.json) - This gives the State data along with other test details.
 * [District Data](https://api.covid19india.org/state_district_wise.json) - This gives District wise data of all States.
