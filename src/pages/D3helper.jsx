@@ -18,16 +18,16 @@ const Arc = ({ data, index, createArc, colors, format }) => (
   </g>
 );
 
-const Pie = props => {
+const Pie = (props) => {
   const createPie = d3
     .pie()
-    .value(d => d.value)
+    .value((d) => d.value)
     .sort(null);
   const createArc = d3
     .arc()
     .innerRadius(props.innerRadius)
     .outerRadius(props.outerRadius);
-  const colors = d3.scaleOrdinal(['#DC143C', '#14cC3C', '#595959']);
+  const colors = d3.scaleOrdinal(["#DC143C", "#14cC3C", "#595959"]);
   const format = d3.format(".0f");
   const data = createPie(props.data);
 

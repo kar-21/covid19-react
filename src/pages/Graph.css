@@ -28,11 +28,11 @@
     left: 36px;
   }
   .detailed-label h4 {
-      margin: 7px;
-      font-size: medium;
+    margin: 7px;
+    font-size: medium;
   }
   .detailed-value h4 {
     margin: 7px;
-    font-size: medium; 
+    font-size: medium;
   }
 }

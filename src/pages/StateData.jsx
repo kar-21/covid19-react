@@ -74,20 +74,22 @@ function State(props) {
 
   useEffect(() => {
     if (!isLoaded) {
-      Axios.get("https://api.covid19india.org/state_district_wise.json").then(
-        (res) => {
+      Axios.get("https://api.covid19india.org/state_district_wise.json")
+        .then((res) => {
           setDistrictWiseResponse(
             res.data[props.match.params.state].districtData
           );
           setIsloaded(true);
           setIsServerDown(false);
-        }
-      ).catch(err => {
-        console.error("server is down", err);
-        setDistrictWiseResponse(responseData.default[props.match.params.state].districtData);
-        setIsloaded(true);
-        setIsServerDown(true);
-      });
+        })
+        .catch((err) => {
+          console.error("server is down", err);
+          setDistrictWiseResponse(
+            responseData.default[props.match.params.state].districtData
+          );
+          setIsloaded(true);
+          setIsServerDown(true);
+        });
     }
   }, [isLoaded, props.match.params.state]);
 
