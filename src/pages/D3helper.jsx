@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 const Arc = ({ data, index, createArc, colors, format }) => (
   <g key={index} className="arc">
     <path className="arc" d={createArc(data)} fill={colors(index)} />
-    <text
+    {/* <text
       transform={`translate(${createArc.centroid(data)})`}
       textAnchor="middle"
       alignmentBaseline="middle"
@@ -14,7 +14,7 @@ const Arc = ({ data, index, createArc, colors, format }) => (
       fontSize="14"
     >
       {format(data.value)}
-    </text>
+    </text> */}
   </g>
 );
 
@@ -27,7 +27,7 @@ const Pie = props => {
     .arc()
     .innerRadius(props.innerRadius)
     .outerRadius(props.outerRadius);
-  const colors = d3.scaleOrdinal(['#E00000', '#00A000', '#595959']);
+  const colors = d3.scaleOrdinal(['#DC143C', '#14cC3C', '#595959']);
   const format = d3.format(".0f");
   const data = createPie(props.data);
 

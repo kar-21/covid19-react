@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
-import "./Table.css";
-import Axios from "axios";
 import Paper from "@material-ui/core/Paper";
-import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import { makeStyles } from "@material-ui/core/styles";
+import Axios from "axios";
 import Graph from "./Graph";
-import * as responseData from "../assets/data.json";
-
+import ArrowUpwardIcon from "@material-ui/icons/ArrowUpward";
 import {
   Table,
   TableContainer,
@@ -16,6 +13,7 @@ import {
   TableBody,
   TableSortLabel,
 } from "@material-ui/core";
+import * as responseData from "../assets/state-wise-data.json";
 
 const useStyles = makeStyles({
   root: {
@@ -44,7 +42,7 @@ const useStyles = makeStyles({
   },
   noPaddingLeft: {
     paddingLeft: "0px",
-    paddingRight: "65px !important",
+    paddingRight: "0px !important",
     border: "0px",
   },
   noPaddingRight: {
@@ -53,21 +51,21 @@ const useStyles = makeStyles({
   },
 });
 
-function Home(props) {
+function State(props) {
   const classes = useStyles();
   let display;
   let rows = [];
   let totalList;
   const [isLoaded, setIsloaded] = useState(false);
-  const [statewiseResponse, setStatewiseResponse] = useState({});
-  const [isClicked, setIsClicked] = useState(false);
   const [isServerDown, setIsServerDown] = useState(false);
+  const [districtWiseResponse, setDistrictWiseResponse] = useState({});
+  const [isClicked, setIsClicked] = useState(false);
   const [order, setOrder] = useState("asc");
   const [orderBy, setOrderBy] = useState("confirmed");
 
   let overallConfirmed = 0;
   const rowHeader = [
-    { id: "state", numeric: false, label: "State" },
+    { id: "district", numeric: false, label: "District" },
     { id: "confirmed", numeric: true, label: "Confirmed" },
     { id: "active", numeric: true, label: "Active" },
     { id: "recovered", numeric: true, label: "Recovered" },
@@ -76,20 +74,22 @@ function Home(props) {
 
   useEffect(() => {
     if (!isLoaded) {
-      Axios.get("https://api.covid19india.org/data.json")
-        .then((res) => {
-          setStatewiseResponse(res.data.statewise);
+      Axios.get("https://api.covid19india.org/state_district_wise.json").then(
+        (res) => {
+          setDistrictWiseResponse(
+            res.data[props.match.params.state].districtData
+          );
           setIsloaded(true);
           setIsServerDown(false);
-        })
-        .catch((err) => {
-          console.error("server is down", err);
-          setStatewiseResponse(responseData.statewise);
-          setIsloaded(true);
-          setIsServerDown(true);
-        });
+        }
+      ).catch(err => {
+        console.error("server is down", err);
+        setDistrictWiseResponse(responseData.default[props.match.params.state].districtData);
+        setIsloaded(true);
+        setIsServerDown(true);
+      });
     }
-  }, [isLoaded]);
+  }, [isLoaded, props.match.params.state]);
 
   function Header() {
     return (
@@ -125,8 +125,8 @@ function Home(props) {
     }
   };
 
-  function createDataState(
-    state,
+  function createDataDistrict(
+    district,
     confirmed,
     deltaConfirmed,
     active,
@@ -136,7 +136,7 @@ function Home(props) {
     deltaDeaths
   ) {
     return {
-      state,
+      district,
       confirmed,
       deltaConfirmed,
       active,
@@ -173,27 +173,21 @@ function Home(props) {
   function TableContent() {
     sortDataIn(orderBy, order);
     return rows.map((row) => (
-      <React.Fragment key={row.state}>
-        <TableRow
-          key={row.state + "row"}
-          className={classes.row}
-          onClick={() => {
-            props.history.push(`/${row.state}`);
-          }}
-        >
+      <React.Fragment key={row.district}>
+        <TableRow key={row.district + "row"} className={classes.row}>
           <TableCell
-            key={row.state}
+            key={row.district}
             align="left"
             className={classes.cellBoarder}
           >
-            <span className="medium">{row.state}</span>
+            <span className="medium">{row.district}</span>
           </TableCell>
           <TableCell
-            key={row.state + "confirmed"}
+            key={row.district + "confirmed"}
             align="right"
             className={"confirmed-cell " + classes.cellBoarder}
           >
-            {row.deltaConfirmed !== "0" ? (
+            {row.deltaConfirmed !== 0 ? (
               <span className="small confirmed">
                 <ArrowUpwardIcon fontSize="inherit" />
                 {row.deltaConfirmed}{" "}
@@ -202,18 +196,18 @@ function Home(props) {
             <span className="medium">{row.confirmed}</span>
           </TableCell>
           <TableCell
-            key={row.state + "active"}
+            key={row.district + "active"}
             align="right"
             className={classes.cellBoarder}
           >
             <span className="medium">{row.active}</span>
           </TableCell>
           <TableCell
-            key={row.state + "recoverd"}
+            key={row.district + "recoverd"}
             align="right"
             className={"recovered-cell " + classes.cellBoarder}
           >
-            {row.deltaRecovered !== "0" ? (
+            {row.deltaRecovered !== 0 ? (
               <span className="small recovered">
                 <ArrowUpwardIcon fontSize="inherit" />
                 {row.deltaRecovered}{" "}
@@ -222,11 +216,11 @@ function Home(props) {
             <span className="medium">{row.recovered}</span>
           </TableCell>
           <TableCell
-            key={row.state + "deaths"}
+            key={row.district + "deaths"}
             align="right"
             className={classes.cellBoarder}
           >
-            {row.deltaDeaths !== "0" ? (
+            {row.deltaDeaths !== 0 ? (
               <span className="small deaths">
                 <ArrowUpwardIcon fontSize="inherit" />
                 {row.deltaDeaths}{" "}
@@ -256,28 +250,39 @@ function Home(props) {
     );
   }
   if (isLoaded) {
-    statewiseResponse.map(
-      (state) =>
+    Object.entries(districtWiseResponse).map(
+      (district) =>
         (rows = [
           ...rows,
-          createDataState(
-            state.state,
-            state.confirmed,
-            state.deltaconfirmed,
-            state.active,
-            state.recovered,
-            state.deltarecovered,
-            state.deaths,
-            state.deltadeaths
+          createDataDistrict(
+            district[0],
+            district[1].confirmed,
+            district[1].delta.confirmed,
+            district[1].active,
+            district[1].recovered,
+            district[1].delta.recovered,
+            district[1].deceased,
+            district[1].delta.deceased
           ),
         ])
     );
-    totalList = rows[0];
-    rows = rows.splice(1, rows.length);
+    totalList = {
+      state: props.match.params.state,
+      confirmed: 0,
+      active: 0,
+      recovered: 0,
+      deaths: 0,
+    };
+    rows.forEach((row) => {
+      totalList.confirmed += row.confirmed;
+      totalList.active += row.active;
+      totalList.recovered += row.recovered;
+      totalList.deaths += row.deaths;
+    });
     rows.map((row) => (overallConfirmed += row.confirmed));
     display = (
       <>
-        <h1>COVID-19 Tracker</h1>
+        <h1>{props.match.params.state}</h1>
         {isLoaded && isServerDown ? (
           <h6 className="server-down">
             Backend Server is Down. The cache data shown is of date 13-sep-2020
@@ -293,4 +298,4 @@ function Home(props) {
 
   return <>{display}</>;
 }
-export default Home;
+export default State;

@@ -1,10 +1,38 @@
 .confimed-head {
-    position: absolute;
-    top: 170px;
-    left: calc(50% - 40px /2);
-    color: red;
+  position: absolute;
+  top: 200px;
+  left: calc(50% - 72px / 2);
+  color: red;
+  font-size: large;
 }
-.donut-graph{
-    margin: auto;
-    width: 200px
+.donut-graph {
+  margin: auto;
+  width: 260px;
+}
+.detailed-entires {
+  position: absolute;
+  top: 120px;
+  left: calc(50% - 370px);
+  display: flex;
+}
+.detailed-label {
+  width: 100px;
+}
+.detailed-value {
+  text-align: end;
+}
+@media screen and (max-width: 700px) {
+  .detailed-entires {
+    position: relative;
+    top: 0px;
+    left: 36px;
+  }
+  .detailed-label h4 {
+      margin: 7px;
+      font-size: medium;
+  }
+  .detailed-value h4 {
+    margin: 7px;
+    font-size: medium; 
+  }
 }

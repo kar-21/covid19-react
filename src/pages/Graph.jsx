@@ -20,11 +20,25 @@ function Graph(props) {
       <h3 className="confimed-head">{props.totalList.confirmed}</h3>
       <D3helper
         data={data}
-        width={200}
-        height={200}
+        width={260}
+        height={260}
         innerRadius={60}
-        outerRadius={100}
+        outerRadius={130}
       />
+      <div className="detailed-entires">
+        <div className="detailed-label">
+          <h4>Confirmed</h4>
+          <h4>Active</h4>
+          <h4>Recovered</h4>
+          <h4>Deaths</h4>
+        </div>
+        <div className="detailed-value">
+          <h4 className="confirmed">{props.totalList.confirmed}</h4>
+          <h4 className="active">{props.totalList.active}</h4>
+          <h4 className="recovered">{props.totalList.recovered}</h4>
+          <h4 className="deaths">{props.totalList.deaths}</h4>
+        </div>
+      </div>
     </div>
   );
 }

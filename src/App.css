@@ -1,3 +1,15 @@
 h1 {
     text-align: center;
 }
+.error-page {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+.error-h1 {
+    text-align: center;
+    margin-top: 47vh;
+}
+.error-h2 {
+    text-align: center;
+}
