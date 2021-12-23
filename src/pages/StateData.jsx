@@ -74,7 +74,7 @@ function State(props) {
 
   useEffect(() => {
     if (!isLoaded) {
-      Axios.get("https://api.covid19india.org/state_district_wise.json")
+      Axios.get("https://data.covid19india.org/state_district_wise.json")
         .then((res) => {
           setDistrictWiseResponse(
             res.data[props.match.params.state].districtData

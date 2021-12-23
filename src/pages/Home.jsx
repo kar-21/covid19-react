@@ -76,7 +76,7 @@ function Home(props) {
 
   useEffect(() => {
     if (!isLoaded) {
-      Axios.get("https://api.covid19india.org/data.json")
+      Axios.get("https://data.covid19india.org/data.json")
         .then((res) => {
           setStatewiseResponse(res.data.statewise);
           setIsloaded(true);
